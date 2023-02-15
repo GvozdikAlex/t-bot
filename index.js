@@ -1,64 +1,96 @@
 const TelegramApi = require("node-telegram-bot-api");
-const { gameOptions, againOptions } = require("./options");
-const token = "5819119074:AAGp4VAj3w7v_UlympzUmHPx00_hgbPq3As";
-const bot = new TelegramApi(token, { polling: true });
+const { gameOptions } = require("./options");
+const {
+  token,
+  getTime,
+  sendVacationOrSickLeaveDays,
+  getArrayOfStaff,
+  sendEveryDayMessage,
+  sendReportWorkingDays,
+} = require("./helper");
+
+
+const bot = new TelegramApi(token, {
+  polling: {
+    interval: 300,
+    autoStart: true,
+    params: { timeout: 10 },
+  },
+});
 
 bot.setMyCommands([
-  { command: "/start", description: "Lets get started" },
-  { command: "/info", description: "your name is ....." },
-  { command: "/get", description: "Do you wanna get sticker ???" },
-  { command: "/check", description: "Are you following us ?" },
+  { command: "/start", description: "Let's get started" },
 ]);
 
 bot.on("message", async (msg) => {
   const {
+    date,
     text,
     chat: { id: idChat },
-    from: { first_name: name },
+    from: { first_name: name, username: userTag },
   } = msg;
-  console.log("msg FROM TELEGRAM:>> ", { text, idChat });
-
-  if (text === "Request Time-Off") {
-    await bot.sendMessage(idChat, "https://forms.gle/spPW4wrz5PGHK9xcA");
-  }
-
-  // bot.sendMessage(idChat, `You wrote me ${text}`)
-  let pass = await bot.getChatMember("@ulbitvchat", idChat);
-  if (text === "/check") {
-    await bot.sendMessage(idChat, `PASS STATUS ${pass.status}`);
-    console.log("MEMBER ? :>> ", pass);
-  }
-  if (text === "/start") {
-    await bot.sendPhoto(idChat, "https://telegram.org/img/t_logo.png");
-    // await bot.sendAudio(
-    //   idChat,
-    //   './test.mp3',
-    //   { caption: "Sent by: " + name }
-    // );
-    // await bot.sendSticker(
-    //   idChat,
-    //   "https://tlgrm.eu/_/stickers/4dd/300/4dd300fd-0a89-3f3d-ac53-8ec93976495e/4.webp"
-    // );
-    await bot.sendMessage(
-      idChat,
-      `Let's get started with this text -  ${text}`,
-      gameOptions
-    );
-  }
-  if (text === "/info") {
-    await bot.sendMessage(idChat, `Hello Mr -  ${name}`);
-    // await bot.close();
-    // await bot.getMe();
-  }
-  if (text === "/get") {
-    // await bot.getFile(
-    //   idChat,
-    //   "BQACAgIAAxkBAAEb8Q5jv-_bMLRShTqkdK34rLQltC-skAACSyEAApKbAAFKVtBI7MUGKEktBA"
-    // );
-    await bot.sendAnimation(
-      idChat,
-      "https://tlgrm.eu/_/stickers/4dd/300/4dd300fd-0a89-3f3d-ac53-8ec93976495e/4.webp"
-    );
+  const { yearFunction } = getTime(date);
+  const arrayOfStaff = await getArrayOfStaff();
+  switch (text) {
+    case "Leave Anonymous Feedback":
+      await bot.sendMessage(idChat, "FEEDBACK");
+      break;
+    case "Request Time-Off":
+      await bot.sendMessage(
+        idChat,
+        "[PRESS HERE](https://forms.gle/spPW4wrz5PGHK9xcA)",
+        { parse_mode: "Markdown" }
+      );
+      break;
+    case "Time-Off Balance":
+      const { resVacation, resSickLeave } = sendVacationOrSickLeaveDays(
+        arrayOfStaff,
+        userTag
+      );
+      await bot.sendMessage(
+        idChat,
+        `*You still have ${31 - resVacation} days of vacation and ${
+          31 - resSickLeave
+        } days of sick leave to use by the end of this year ${yearFunction} *`,
+        { parse_mode: "Markdown" }
+      );
+      break;
+    case "Report / Request Hardware":
+      await bot.sendMessage(
+        idChat,
+        "https://docs.google.com/forms/d/e/1FAIpQLSfuIzUzkzzWvwd4IPkC8PSMVlX0c582D3kD6p3lR_iKrW_3FQ/viewform"
+      );
+      break;
+    case "Vacation Policy":
+      await bot.sendMessage(
+        idChat,
+        "https://drive.google.com/file/d/1vFmtAodiOFzu7GO-a-HBLqe778O08DeI/view?usp=share_link"
+      );
+      break;
+    case "Find Contact":
+      await bot.sendMessage(
+        idChat,
+        "https://drive.google.com/file/d/1E467YasZzhSuvaXR26-t1vwlF1Yx8ZA7/view?usp=share_link"
+      );
+      break;
+    case "Health Insurance Info":
+      await bot.sendMessage(
+        idChat,
+        "https://drive.google.com/file/d/1LQom3Geayvt9BYH6wXMFCmk3PMstlCW8/view?usp=sharing"
+      );
+      break;
+    case "/start":
+      await bot.sendMessage(
+        idChat,
+        `Welcome ${name} and let's get started !`,
+        gameOptions
+      );
+      await sendReportWorkingDays(bot, idChat, date);
+      sendEveryDayMessage(bot, idChat, date, arrayOfStaff);
+      break;
+    default:
+      await bot.sendMessage(idChat, `Hello Mr -  ${name}`);
+      break;
   }
 });
 
@@ -70,6 +102,5 @@ bot.on("callback_query", async (btn_msg) => {
     },
   } = btn_msg;
   console.log("btn_msg AFTER PRESS BUTTON", btn_msg);
-  //   console.log(`You press on button ${data}`);
   await bot.sendMessage(id, `You press on button ${data}`);
 });
