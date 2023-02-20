@@ -2,8 +2,6 @@ require("dotenv").config();
 const schedule = require("node-schedule");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 
-const key =
-  "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRGFq0ruJtxqC1\nxHgn8lYmfJpvzmvOUttvV5edJBpya1ClFg5fs5Tfpyv9Oo5a/5nVT/OvPWCxri/r\nlwvEVui43b+uj2amOmpcYGe4Wb5J4Lcgaaz8dgV6bTBiHy0OGYwNs1fGvZNZvOk0\nfXPxZP5hfs/HUMr7JBPbSr0qe4CqNvq3qC20yAUFLHbl9qL7sSmhmYzj3CSvFk6b\nZzbRQ99hKsrI1pwqoU9hbLzEwvfjoTbbNfMhwIy0O8Rwa9m8giO3AFlsa25cL61V\nuN49h/mBd5gcUWpTvJjKE98FOjaYmOy7l6aSLUtfJwzBF50zNOPLrudhVhFtSfF1\nZduFfRThAgMBAAECggEAAIGX6/VlxEZFgAB9xKWoN7z4KBUj2wKwV/tU+U3BEqMt\nNXkcMnceK9HHytEoJGhCAxYyd4DP3x5A13KCK3OFFLgqDU4jktDJY80yncD53kvr\npZRxQBs5CtbWKyalgUc745HvlcztB7vsBJ3ZI1h56oUtaO91I66EAx/nMqx3NJz0\nV6DrG7njFB11z9Byodx7Snr2z6YdEyyY1UKp1h0GzEVJVX4NVjlzidKzHPEWrpwc\nM0DgJIYO/AFSlI4dG23Za0BmG/OuTXB1hROgWbi/PRyLIDTpT0ABjY4SHVnXEcU2\nThHcmXhhjMdAeOoVUDs1HmUVp4UL2cEwTBuTeG7lwQKBgQDp5sMNBcGyafzlm3rd\nwlXfh0YsCXEnMGcLyovaTgmYbbyRN7ZjqqxPsJl0tCaao26iUHc1ECbPhL1HvcDL\ntRGD2EYclFOemH33HupzQxnj31J/UDEZ7Em9VYk5DlD0xt+fM4BElM48SMar+Bq9\nTynCHieMkQFEgEr+IAXjkGFr3QKBgQDk2Z4F1CQ3tkhs0IS7C3Vll8NPus7ugnDc\n3Gzz/68gSVhGSx/1XVdDjPIKQcOxovP2YCKswJqIYHpQy10UJRcN9ZwTZ32WBjrr\nq0a8s9Gk66Oja0JwaaDjsWJOsiTQbk/FAnG7RO6fgKVaECibnlzaQI/hXkJ0gehH\nStKqf0VO1QKBgQCifxjfATLSGmQBuASh75LtGfOcQGsGCNBuFqcWYMS1yvcIBCaI\nE1hmfI//zfBL2mLQDQrkKHZuEQ/WuXMpkn+6kxQSYtG9Cr/oYOgMb3+bGdkcbb/O\n/KM2ECinJNUFWOyek473FlI4+25apqEdB9RA8eYT9+Fjj6WJ6wFsWS/1WQKBgGdj\niWjItrQUvhOrAMwgGSGUtsBGfUZz19lwHCj/0nabrC3VstJ/IPV7r73CiE6wd9dP\nB1tUiHwkWh42Qg7f0tKTq7d4gdxNZEEkWAjYlFYVvxANXS68CdvUP72d7dPcgl1X\nBVq9gbC9xfYyZqYnnXtcv6PpmcxZBD9xJkuww/chAoGAWOkNKifPKlDanpx+Nv2P\nH9n/45KSQVHnj0B0r6l4CbQsxn9JgUWVZCMq3GpUH1t7kvHF+WRrbLn+QmQlqbxA\nTjcITer3L0k+FGqYFImkQERPUGeZEiLVn1bxeBQMxBie3zE3aAedR/wzUtpZREIs\nuP71QWaeBSWVND9h+Jl+Zj0=\n-----END PRIVATE KEY-----\n";
 const token = process.env.TOKEN;
 
 const doc = new GoogleSpreadsheet(process.env.SPREAD_SHEET_ID);
@@ -26,7 +24,7 @@ const arrayOfMonths = [
 async function getArrayOfStaff() {
   await doc.useServiceAccountAuth({
     client_email: process.env.EMAIL,
-    private_key: key,
+    private_key: process.env.PRIVATE_KEY,
   });
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
