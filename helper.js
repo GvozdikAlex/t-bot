@@ -4,7 +4,6 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 
 const token = process.env.TOKEN;
 
-const doc = new GoogleSpreadsheet(process.env.SPREAD_SHEET_ID);
 
 // const arrayOfMonths = [
 //   "January",
@@ -21,59 +20,6 @@ const doc = new GoogleSpreadsheet(process.env.SPREAD_SHEET_ID);
 //   "December",
 // ];
 
-async function getArrayOfStaff() {
-  await doc.useServiceAccountAuth({
-    client_email: process.env.EMAIL,
-    private_key: process.env.PRIVATE_KEY,
-  });
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-
-  const rows = await sheet.getRows();
-  const arrayOfStaff = rows.map((obj) => {
-    const [
-      timestamp,
-      fullName,
-      emailAddress,
-      type,
-      startDate,
-      endDate,
-      comment,
-      fullNameAgain,
-      telegramUserTag,
-      birthday,
-      holiday,
-    ] = obj["_sheet"]["headerValues"];
-    const [
-      timestampData,
-      fullNameData,
-      emailAddressData,
-      typeData,
-      startDateData,
-      endDateData,
-      commentData,
-      fullNameAgainData,
-      telegramUserTagData,
-      birthdayData,
-      holidayData,
-    ] = obj._rawData;
-    return {
-      timestamp: timestampData,
-      fullName: fullNameData,
-      emailAddress: emailAddressData,
-      type: typeData,
-      startDate: startDateData,
-      endDate: endDateData,
-      comment: commentData,
-      fullNameAgain: fullNameAgainData,
-      telegramUserTag: telegramUserTagData,
-      birthday: birthdayData,
-      holiday: holidayData,
-    };
-  });
-
-  return arrayOfStaff;
-}
 
 // function sendEveryDayMessage(bot, idChat, timestamp, arrOfStaff) {
 //   const { hours, dayOfWeek, dateFunction, yearFunction, monthOfYear } =
@@ -309,5 +255,4 @@ async function getArrayOfStaff() {
 
 module.exports = {
   token,
-  getArrayOfStaff,
 };
