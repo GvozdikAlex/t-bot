@@ -1,9 +1,6 @@
 const TelegramApi = require("node-telegram-bot-api");
 const { gameOptions } = require("./options");
-const {
-  token,
-} = require("./helper");
-
+const { token } = require("./helper");
 
 const bot = new TelegramApi(token, {
   polling: {
@@ -13,18 +10,16 @@ const bot = new TelegramApi(token, {
   },
 });
 
-bot.setMyCommands([
-  { command: "/start", description: "Let's get started" },
-]);
+bot.setMyCommands([{ command: "/start", description: "Let's get started" }]);
 
-bot.on("message", async (msg) => {
+bot.on("message", (msg) => {
   const {
     date,
     text,
     chat: { id: idChat },
     from: { first_name: name, username: userTag },
   } = msg;
-  await bot.sendMessage(idChat, `Hello Mr -  ${name}`);
+  bot.sendMessage(idChat, `Hello Mr -  ${(name, date, text, idChat, userTag)}`);
   // const { yearFunction } = getTime(date);
   // const arrayOfStaff = await getArrayOfStaff();
   // switch (text) {
